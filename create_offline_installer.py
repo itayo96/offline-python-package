@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 import argparse
+import shutil
 
 
 VIRTUALENV_LIB_NAME = 'virtualenv'
@@ -13,7 +14,7 @@ VIRTUALENV_PIP = os.path.join(TEMP_FOLDER_PATH, 'Scripts', 'pip')
 OUTPUT_FOLDER_NAME = "offline-{}-installer"
 INSTALLATION_SCRIPT_PATH = os.path.join(OUTPUT_FOLDER_NAME, r'install.py')
 OFFLINE_INSTALLATION_COMMAND = 'import subprocess\nimport sys\nsubprocess.check_call([sys.executable, "-m", "pip", ' \
-                              '"install", "--no-index", "--find-links=./", "-r", "requirements.txt"]) '
+                              '"install", "--no-index", "--find-links=./", "-r", "requirements.txt"])\n'
 
 
 def create_offline_installer(package_name):
@@ -39,7 +40,8 @@ def create_offline_installer(package_name):
     with open(INSTALLATION_SCRIPT_PATH.format(package_name), 'w') as script_file:
         script_file.write(OFFLINE_INSTALLATION_COMMAND)
 
-    # TODO Remove the temporary folder
+    # Remove the temporary folder
+    shutil.rmtree(TEMP_FOLDER_PATH, ignore_errors=True)
 
 
 if __name__ == '__main__':
@@ -48,3 +50,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     create_offline_installer(args.requested_package)
+
+    print(f'\n** Succeeded to create the offline installer for {args.requested_package} **')
